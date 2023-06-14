@@ -10,4 +10,7 @@ public interface TmfTransactionRepository extends JpaRepository<TmfTransaction, 
     @Override
     @NonNull
     Page<TmfTransaction> findAll(@NonNull Pageable pageable);
+
+    @NonNull
+    Page<TmfTransaction> findByBillingAccountNum(Long query, @NonNull Pageable pageable);
 }

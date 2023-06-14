@@ -14,11 +14,18 @@ import org.springframework.data.domain.Page;
 public class TmfTransactionController {
 
     @Autowired
-    TmfTransactionRepository myTmfTransactionRepository;
+    TmfTransactionRepository tmfTransactionRepository;
 
     @GetMapping("/getTmfTransactions")
     public Page<TmfTransaction> getTmfTransactionPage(@RequestParam(name = "page", required = true) int page) {
         Pageable pageElements = PageRequest.of(page, 10);
-        return myTmfTransactionRepository.findAll(pageElements);
+        return tmfTransactionRepository.findAll(pageElements);
+    }
+
+    @GetMapping("/getByQuery")
+    public Page<TmfTransaction> getByQuery(@RequestParam(name = "query", required = true) Long query,
+                                           @RequestParam(name = "page", required = true) int page) {
+        Pageable pageElements = PageRequest.of(page, 10);
+        return tmfTransactionRepository.findByBillingAccountNum(query, pageElements);
     }
 }
