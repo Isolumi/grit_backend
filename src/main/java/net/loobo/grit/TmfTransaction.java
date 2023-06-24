@@ -29,9 +29,10 @@ public class TmfTransaction {
     private Short retryTimes;
     private String reasonCd;
     private String processResult;
-    private String processBy;
+    private String processedBy;
     private Integer processDuration;
     private Date lastUpdateTs;
+    private String processBy;
 
     public String getId() {
         return id;
@@ -207,6 +208,14 @@ public class TmfTransaction {
 
     public void setProcessBy(String processBy) {
         this.processBy = processBy;
+    }
+
+    public String getProcessedBy() {
+        return processedBy;
+    }
+
+    public void setProcessedBy(String processedBy) {
+        this.processedBy = processedBy;
     }
 
     public Integer getProcessDuration() {

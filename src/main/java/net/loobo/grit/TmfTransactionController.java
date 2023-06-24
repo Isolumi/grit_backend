@@ -1,10 +1,10 @@
 package net.loobo.grit;
 
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -13,19 +13,30 @@ import org.springframework.data.domain.Page;
 @RestController
 public class TmfTransactionController {
 
-    @Autowired
+    @Resource
     TmfTransactionRepository tmfTransactionRepository;
 
+    @Resource
+    TmfTransactionService tmfTransactionService;
+
     @GetMapping("/getTmfTransactions")
-    public Page<TmfTransaction> getTmfTransactionPage(@RequestParam(name = "page", required = true) int page) {
+    public Page<TmfTransaction> getTmfTransactionPage(@RequestParam(name = "page", required = true) int page,
+                                                      @RequestParam(name = "query", required = false) Long query) {
+
         Pageable pageElements = PageRequest.of(page, 10);
-        return tmfTransactionRepository.findAll(pageElements);
+        if (query == null) {
+            return tmfTransactionRepository.findAll(pageElements);
+        } else {
+            return tmfTransactionRepository.findByBillingAccountNum(query, pageElements);
+        }
     }
 
-    @GetMapping("/getByQuery")
-    public Page<TmfTransaction> getByQuery(@RequestParam(name = "query", required = true) Long query,
-                                           @RequestParam(name = "page", required = true) int page) {
-        Pageable pageElements = PageRequest.of(page, 10);
-        return tmfTransactionRepository.findByBillingAccountNum(query, pageElements);
+    @GetMapping("/getFilteredTmfTransactions")
+    public Page<TmfTransaction> getFilteredTmfTransactions(@RequestParam(name = "page", required = true) int page,
+                                           @RequestParam(name = "statusCode", required = false) String statusCode,
+                                           @RequestParam(name = "activityCode", required = false) String activityCode,
+                                           @RequestParam(name = "externalId", required = false) Long externalId) {
+
+        return tmfTransactionService.filteredQuery(page, statusCode, activityCode, externalId);
     }
 }

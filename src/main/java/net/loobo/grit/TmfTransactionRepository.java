@@ -13,4 +13,6 @@ public interface TmfTransactionRepository extends JpaRepository<TmfTransaction, 
 
     @NonNull
     Page<TmfTransaction> findByBillingAccountNum(Long query, @NonNull Pageable pageable);
+
+
 }
