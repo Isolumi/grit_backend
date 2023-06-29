@@ -35,9 +35,8 @@ public class TmfTransactionService {
             conditions.add("external_id='" + externalId + "'");
         }
         sql.append(String.join(" AND ", conditions));
+        sql.append(" LIMIT 10 OFFSET ").append(page * 10);
 
-        String test = sql.toString();
-        test = test + " LIMIT 10";
         List<TmfTransaction> result = jdbcTemplate.query(sql.toString(), (row, rowNum) -> {
             var t = new TmfTransaction();
             t.setId(row.getString(1));
@@ -69,8 +68,7 @@ public class TmfTransactionService {
         });
         Integer totalElements = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tmf_transaction WHERE " + String.join(" AND ", conditions), Integer.class);
         int total = (totalElements != null) ? totalElements : 0;
-        List<TmfTransaction> subResults = result.subList(page*10, page*10+10);
 
-        return new PageImpl<>(subResults, PageRequest.of(page, 10), total);
+        return new PageImpl<>(result, PageRequest.of(page, 10), total);
     }
 }
