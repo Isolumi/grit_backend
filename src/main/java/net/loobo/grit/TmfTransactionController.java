@@ -9,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 @CrossOrigin(origins = "http://127.0.0.1:5173/")
 @RestController
 public class TmfTransactionController {
@@ -33,10 +35,9 @@ public class TmfTransactionController {
 
     @GetMapping("/getFilteredTmfTransactions")
     public Page<TmfTransaction> getFilteredTmfTransactions(@RequestParam(name = "page", required = true) int page,
-                                           @RequestParam(name = "statusCode", required = false) String statusCode,
-                                           @RequestParam(name = "activityCode", required = false) String activityCode,
-                                           @RequestParam(name = "externalId", required = false) Long externalId) {
+                                           @RequestParam(name = "statusCode", required = false) List<String> statusCode,
+                                           @RequestParam(name = "activityCode", required = false) List<String> activityCode) {
 
-        return tmfTransactionService.filteredQuery(page, statusCode, activityCode, externalId);
+        return tmfTransactionService.filteredQuery(page, statusCode, activityCode);
     }
 }

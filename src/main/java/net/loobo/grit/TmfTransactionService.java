@@ -3,7 +3,6 @@ package net.loobo.grit;
 import jakarta.annotation.Resource;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,7 @@ public class TmfTransactionService {
     @Resource
     private JdbcTemplate jdbcTemplate;
 
-    public Page<TmfTransaction> filteredQuery(int page, String statusCode, String activityCode, Long externalId) {
+    public Page<TmfTransaction> filteredQuery(int page, List<String> statusCode, List<String> activityCode) {
         StringBuilder sql = new StringBuilder("SELECT id, create_ts, service_type, request_body, request_type, " +
                 "txn_seq_no, txn_effective_ts, billing_account_num, external_id, subscriber_num, activity_cd, " +
                 "override_activity_cd, total_offer, has_shared_offer, distribution_id, created_by, status_cd, " +
@@ -26,16 +25,22 @@ public class TmfTransactionService {
         List<String> conditions = new ArrayList<>();
 
         if (statusCode != null) {
-            conditions.add("status_cd='" + statusCode + "'");
+            List<String> sc = new ArrayList<>();
+            for (String cd : statusCode) {
+                sc.add("'" + cd + "'");
+            }
+            conditions.add("status_cd IN (" + String.join(",", sc) + ")");
         }
         if (activityCode != null) {
-            conditions.add("activity_cd='" + activityCode + "'");
-        }
-        if (externalId != null) {
-            conditions.add("external_id='" + externalId + "'");
+            List<String> ac = new ArrayList<>();
+            for (String cd : activityCode) {
+                ac.add("'" + cd + "'");
+            }
+            conditions.add("activity_cd IN (" + String.join(",", ac) + ")");
         }
         sql.append(String.join(" AND ", conditions));
         sql.append(" LIMIT 10 OFFSET ").append(page * 10);
+        System.out.println(sql.toString());
 
         List<TmfTransaction> result = jdbcTemplate.query(sql.toString(), (row, rowNum) -> {
             var t = new TmfTransaction();
