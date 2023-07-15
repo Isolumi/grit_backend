@@ -1,6 +1,7 @@
 package net.loobo.grit;
 
 import jakarta.annotation.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,9 +28,9 @@ public class TmfTransactionController {
 
         Pageable pageElements = PageRequest.of(page, 10);
         if (query == null) {
-            return tmfTransactionRepository.findAll(pageElements);
+            return tmfTransactionRepository.findByOrderByCreateTs(pageElements);
         } else {
-            return tmfTransactionRepository.findByBillingAccountNum(query, pageElements);
+            return tmfTransactionRepository.findByBillingAccountNumOrderByCreateTs(query, pageElements);
         }
     }
 
@@ -39,5 +40,13 @@ public class TmfTransactionController {
                                            @RequestParam(name = "activityCode", required = false) List<String> activityCode) {
 
         return tmfTransactionService.filteredQuery(page, statusCode, activityCode);
+    }
+
+    @GetMapping("/getBAN")
+    public Page<TmfTransaction> getBan(@RequestParam(name = "page", required = true) int page,
+                                       @RequestParam(name = "id", required = true) Long id) {
+
+        Pageable pageElements = PageRequest.of(page, 10);
+        return tmfTransactionRepository.findByBillingAccountNumOrderByCreateTs(id, pageElements);
     }
 }

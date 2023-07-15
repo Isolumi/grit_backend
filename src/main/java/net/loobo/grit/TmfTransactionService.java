@@ -40,6 +40,7 @@ public class TmfTransactionService {
         }
         sql.append(String.join(" AND ", conditions));
         sql.append(" LIMIT 10 OFFSET ").append(page * 10);
+        sql.append(" ORDER BY create_ts ");
         System.out.println(sql.toString());
 
         List<TmfTransaction> result = jdbcTemplate.query(sql.toString(), (row, rowNum) -> {
